@@ -2,16 +2,19 @@ import {
   IsEmail,
   IsNotEmpty,
   IsOptional,
+  IsString,
   IsUrl,
   MaxLength,
   MinLength,
 } from 'class-validator';
 
 export class CreateUserDto {
+  @IsString()
   @MinLength(2, { message: 'Имя не может быть короче 2 символов' })
   @MaxLength(30, { message: 'Имя не может быть длиннее 30 символов' })
-  username: string;
+  userName: string;
 
+  @IsString()
   @MinLength(2, { message: 'Описание не может быть короче 2 символов' })
   @MaxLength(200, { message: 'Описание не может быть длиннее 200 символов' })
   @IsOptional()
@@ -21,9 +24,11 @@ export class CreateUserDto {
   @IsOptional()
   avatar: string;
 
+  @IsString()
   @IsEmail()
   email: string;
 
+  @IsString()
   @IsNotEmpty()
   password: string;
 }
