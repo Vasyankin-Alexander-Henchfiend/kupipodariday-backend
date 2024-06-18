@@ -4,12 +4,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { HashService } from 'src/hash/hash.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private hashService: HashService,
   ) {}
 
   findAll(): Promise<User[]> {
@@ -41,19 +43,25 @@ export class UsersService {
         'Пользователь с такой электронной почтой уже существует',
       );
     }
-    const user = this.userRepository.create(createUserDto);
+    const password = this.hashService.getHash(createUserDto.password);
+    const user = this.userRepository.create({ ...createUserDto, password });
     return await this.userRepository.save(user);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = this.findOne(id);
-    if (user === null) {
+    const user = await this.findOne(id);
+    if (!user) {
       throw new ForbiddenException('Такого пользователя не существует');
     }
-    return await this.userRepository.update(id, updateUserDto);
+    if (updateUserDto.password) {
+      updateUserDto.password = this.hashService.getHash(updateUserDto.password);
+    }
+    await this.userRepository.update(id, updateUserDto);
+    return 'Данные пользователя успешно изменены';
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number): Promise<string> {
     await this.userRepository.delete(id);
+    return 'Пользователь успешно удален';
   }
 }
