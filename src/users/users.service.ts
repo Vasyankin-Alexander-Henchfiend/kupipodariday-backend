@@ -18,8 +18,12 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  findOne(id: number): Promise<User | null> {
-    return this.userRepository.findOneBy({ id });
+  async findOne(id: number): Promise<User | null> {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new ForbiddenException('Такого пользователя не существует');
+    }
+    return user;
   }
 
   findByEmail(email: string): Promise<User> {
@@ -49,9 +53,18 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.findOne(id);
-    if (!user) {
-      throw new ForbiddenException('Такого пользователя не существует');
+    await this.findOne(id);
+    const existName = await this.findByName(updateUserDto?.userName);
+    const existEmail = await this.findByEmail(updateUserDto?.email);
+    if (existName) {
+      throw new ForbiddenException(
+        'Пользователь с таким именем уже существует',
+      );
+    }
+    if (existEmail) {
+      throw new ForbiddenException(
+        'Пользователь с такой электронной почтой уже существует',
+      );
     }
     if (updateUserDto.password) {
       updateUserDto.password = this.hashService.getHash(updateUserDto.password);
@@ -61,6 +74,7 @@ export class UsersService {
   }
 
   async remove(id: number): Promise<string> {
+    await this.findOne(id);
     await this.userRepository.delete(id);
     return 'Пользователь успешно удален';
   }
