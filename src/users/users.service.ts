@@ -34,9 +34,9 @@ export class UsersService {
     return this.userRepository.findOneBy({ userName });
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const existName = await this.findByName(createUserDto.userName);
-    const existEmail = await this.findByEmail(createUserDto.email);
+  async userNameAndEmailCheck(userDto: UpdateUserDto) {
+    const existName = await this.findByName(userDto?.userName);
+    const existEmail = await this.findByEmail(userDto?.email);
     if (existName) {
       throw new ForbiddenException(
         'Пользователь с таким именем уже существует',
@@ -47,6 +47,10 @@ export class UsersService {
         'Пользователь с такой электронной почтой уже существует',
       );
     }
+  }
+
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    await this.userNameAndEmailCheck(createUserDto);
     const password = this.hashService.getHash(createUserDto.password);
     const user = this.userRepository.create({ ...createUserDto, password });
     return await this.userRepository.save(user);
@@ -54,18 +58,7 @@ export class UsersService {
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     await this.findOne(id);
-    const existName = await this.findByName(updateUserDto?.userName);
-    const existEmail = await this.findByEmail(updateUserDto?.email);
-    if (existName) {
-      throw new ForbiddenException(
-        'Пользователь с таким именем уже существует',
-      );
-    }
-    if (existEmail) {
-      throw new ForbiddenException(
-        'Пользователь с такой электронной почтой уже существует',
-      );
-    }
+    await this.userNameAndEmailCheck(updateUserDto);
     if (updateUserDto.password) {
       updateUserDto.password = this.hashService.getHash(updateUserDto.password);
     }

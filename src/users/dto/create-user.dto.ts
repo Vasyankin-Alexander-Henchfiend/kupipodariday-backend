@@ -28,6 +28,6 @@ export class CreateUserDto {
   email: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Поле пароля не может быть пустым' })
   password: string;
 }
