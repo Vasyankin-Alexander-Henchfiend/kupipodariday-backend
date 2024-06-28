@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { WishlistsService } from './wishlists.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
@@ -16,6 +18,7 @@ export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
   @Post()
+  @UsePipes(new ValidationPipe())
   create(@Body() createWishlistDto: CreateWishlistDto) {
     return this.wishlistsService.create(createWishlistDto);
   }
@@ -31,6 +34,7 @@ export class WishlistsController {
   }
 
   @Patch(':id')
+  @UsePipes(new ValidationPipe())
   update(
     @Param('id') id: string,
     @Body() updateWishlistDto: UpdateWishlistDto,

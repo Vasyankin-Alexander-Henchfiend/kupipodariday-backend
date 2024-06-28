@@ -12,7 +12,7 @@ export class CreateUserDto {
   @IsString()
   @MinLength(2, { message: 'Имя не может быть короче 2 символов' })
   @MaxLength(30, { message: 'Имя не может быть длиннее 30 символов' })
-  userName: string;
+  username: string;
 
   @IsString()
   @MinLength(2, { message: 'Описание не может быть короче 2 символов' })

@@ -7,7 +7,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 @Entity()
 export class User extends BaseEntity {
   @Column({ unique: true })
-  userName: string;
+  username: string;
 
   @Column({ default: 'Пока ничего не рассказал о себе' })
   about: string;

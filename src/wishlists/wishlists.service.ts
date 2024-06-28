@@ -1,26 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Wishlist } from './entities/wishlist.entity';
 
 @Injectable()
 export class WishlistsService {
-  create(createWishlistDto: CreateWishlistDto) {
-    return 'This action adds a new wishlist';
+  constructor(
+    @InjectRepository(Wishlist)
+    private wishlistsRepository: Repository<Wishlist>,
+  ) {}
+
+  findAll(): Promise<Wishlist[]> {
+    return this.wishlistsRepository.find();
   }
 
-  findAll() {
-    return `This action returns all wishlists`;
+  async findOne(id: number): Promise<Wishlist | null> {
+    const wishlist = await this.wishlistsRepository.findOneBy({ id });
+    if (!wishlist) {
+      throw new ForbiddenException('Такого списка пожеланий не существует');
+    }
+    return wishlist;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wishlist`;
+  async create(createWishlistDto: CreateWishlistDto): Promise<Wishlist> {
+    const wishlist = this.wishlistsRepository.create(createWishlistDto);
+    return await this.wishlistsRepository.save(wishlist);
   }
 
-  update(id: number, updateWishlistDto: UpdateWishlistDto) {
-    return `This action updates a #${id} wishlist`;
+  async update(id: number, updateWishlistDto: UpdateWishlistDto) {
+    await this.findOne(id);
+    await this.wishlistsRepository.update(id, updateWishlistDto);
+    return 'Данные списка пожеланий успешно изменены';
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} wishlist`;
+  async remove(id: number) {
+    await this.findOne(id);
+    await this.wishlistsRepository.delete(id);
+    return 'Список пожеланий успешно удален';
   }
 }

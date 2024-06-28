@@ -27,16 +27,22 @@ export class UsersService {
   }
 
   findByEmail(email: string): Promise<User> {
+    if (!email) {
+      return null;
+    }
     return this.userRepository.findOneBy({ email });
   }
 
-  findByName(userName: string): Promise<User> {
-    return this.userRepository.findOneBy({ userName });
+  findByName(username: string): Promise<User> {
+    if (!username) {
+      return null;
+    }
+    return this.userRepository.findOneBy({ username });
   }
 
   async userNameAndEmailCheck(userDto: UpdateUserDto) {
-    const existName = await this.findByName(userDto?.userName);
-    const existEmail = await this.findByEmail(userDto?.email);
+    const existName = await this.findByName(userDto?.username);
+    const existEmail = await this.findByEmail(userDto.email);
     if (existName) {
       throw new ForbiddenException(
         'Пользователь с таким именем уже существует',
