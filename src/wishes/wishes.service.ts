@@ -4,12 +4,14 @@ import { UpdateWishDto } from './dto/update-wish.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from './entities/wish.entity';
 import { Repository } from 'typeorm';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class WishesService {
   constructor(
     @InjectRepository(Wish)
     private wishRepository: Repository<Wish>,
+    private userService: UsersService,
   ) {}
 
   findAll(): Promise<Wish[]> {
@@ -24,8 +26,13 @@ export class WishesService {
     return wish;
   }
 
-  async create(createWishDto: CreateWishDto): Promise<Wish> {
-    const wish = this.wishRepository.create(createWishDto);
+  async create(createWishDto: CreateWishDto, id: number): Promise<Wish> {
+    const user = await this.userService.findOne(id);
+    const { password, ...owner } = user;
+    const wish = this.wishRepository.create({
+      ...createWishDto,
+      owner,
+    });
     return await this.wishRepository.save(wish);
   }
 

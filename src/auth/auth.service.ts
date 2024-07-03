@@ -28,6 +28,7 @@ export class AuthService {
       user.password,
     );
     if (checkPassword) {
+      //убираем пароль чтобы не отображался в ответе
       const { password, ...result } = user;
       return result;
     }
@@ -41,6 +42,8 @@ export class AuthService {
   login(user: User) {
     const payload = { username: user.username, sub: user.id };
     return {
+      username: user.username,
+      id: user.id,
       access_token: this.jwtService.sign(payload),
     };
   }

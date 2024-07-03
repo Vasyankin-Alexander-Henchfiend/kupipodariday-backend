@@ -1,7 +1,7 @@
 import { BaseEntity } from 'src/common/base.entity';
 import { Offer } from 'src/offers/entities/offer.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity()
 export class Wish extends BaseEntity {
@@ -28,7 +28,7 @@ export class Wish extends BaseEntity {
   })
   raised: number;
 
-  @OneToMany(() => User, (user) => user.wishes)
+  @ManyToOne(() => User, (user) => user.wishes)
   owner: User;
 
   @Column()
