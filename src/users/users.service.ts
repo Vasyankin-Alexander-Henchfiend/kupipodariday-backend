@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { HashService } from 'src/hash/hash.service';
+import { Wish } from 'src/wishes/entities/wish.entity';
 
 @Injectable()
 export class UsersService {
@@ -26,14 +27,30 @@ export class UsersService {
     return user;
   }
 
-  findByEmail(email: string): Promise<User> {
+  async findWishes(id: number): Promise<Wish[] | null> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: {
+        wishes: true,
+      },
+    });
+    return user.wishes;
+  }
+
+  async findAnotherUserWishes(username: string): Promise<Wish[] | null> {
+    const user = await this.findByName(username);
+    const wishes = await this.findWishes(user.id);
+    return wishes;
+  }
+
+  findByEmail(email: string): Promise<User | null> {
     if (!email) {
       return null;
     }
     return this.userRepository.findOneBy({ email });
   }
 
-  findByName(username: string): Promise<User> {
+  findByName(username: string): Promise<User | null> {
     if (!username) {
       return null;
     }
