@@ -14,6 +14,7 @@ import {
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { query } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -50,13 +51,9 @@ export class UsersController {
     return this.usersService.findAnotherUserWishes(username);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  @Post('find')
+  findMany(@Body('query') query: string) {
+    return this.usersService.findMany(query);
   }
 }

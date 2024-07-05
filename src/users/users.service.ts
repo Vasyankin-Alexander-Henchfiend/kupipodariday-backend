@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,8 +19,15 @@ export class UsersService {
     private hashService: HashService,
   ) {}
 
-  findAll(): Promise<User[]> {
-    return this.userRepository.find();
+  async findMany(query: string): Promise<User[]> {
+    const users = await this.userRepository.find({
+      where: [{ username: query }, { email: query }],
+    });
+    if (!users) {
+      throw new NotFoundException('Запрашиваемый пользователь не найден');
+    }
+    console.log(users);
+    return users;
   }
 
   async findOne(id: number): Promise<User | null> {
