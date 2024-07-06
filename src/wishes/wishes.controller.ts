@@ -27,24 +27,40 @@ export class WishesController {
     return this.wishesService.create(createWishDto, req.user.userId);
   }
 
-  @Get()
-  findAll() {
-    return this.wishesService.findAll();
+  @Get('last')
+  @UseGuards(JwtAuthGuard)
+  getLast() {
+    return this.wishesService.findLast();
+  }
+
+  @Get('top')
+  @UseGuards(JwtAuthGuard)
+  getTop() {
+    return this.wishesService.findTop();
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   findOne(@Param('id') id: string) {
     return this.wishesService.findOne(+id);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
   update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
     return this.wishesService.update(+id, updateWishDto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string) {
     return this.wishesService.remove(+id);
+  }
+
+  @Post(':id/copy')
+  @UseGuards(JwtAuthGuard)
+  copyWish(@Req() req, @Param('id') id: string) {
+    return this.wishesService.copyWish(+id, req.user.userId);
   }
 }

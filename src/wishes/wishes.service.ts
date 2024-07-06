@@ -18,10 +18,49 @@ export class WishesService {
     return this.wishRepository.find();
   }
 
+  async findLast(): Promise<Wish[]> {
+    return await this.wishRepository.find({
+      relations: { owner: true },
+      order: { createdAt: 'DESC' },
+      skip: 0,
+      take: 40,
+    });
+  }
+
+  async findTop(): Promise<Wish[]> {
+    return await this.wishRepository.find({
+      relations: { owner: true },
+      order: { copied: 'DESC' },
+      skip: 0,
+      take: 20,
+    });
+  }
+
+  async copyWish(id: number, userId: number): Promise<string> {
+    const user = await this.userService.findOne(userId);
+    const { password, ...owner } = user;
+    const currentWish = await this.findOne(id);
+    const copiedWish = this.wishRepository.create({
+      name: currentWish.name,
+      link: currentWish.link,
+      image: currentWish.image,
+      price: currentWish.price,
+      raised: currentWish.raised,
+      owner,
+      description: currentWish.description,
+    });
+    await this.wishRepository.save(copiedWish);
+    await this.wishRepository.save({
+      ...currentWish,
+      copied: +currentWish.copied + 1,
+    });
+    return 'Подарок успешно скопирован';
+  }
+
   async findOne(id: number): Promise<Wish | null> {
     const wish = await this.wishRepository.findOneBy({ id });
     if (!wish) {
-      throw new ForbiddenException('Такого пожелания не существует');
+      throw new ForbiddenException('Такого подарка не существует');
     }
     return wish;
   }
@@ -39,7 +78,7 @@ export class WishesService {
   async update(id: number, updateWishDto: UpdateWishDto) {
     await this.findOne(id);
     await this.wishRepository.update(id, updateWishDto);
-    return 'Данные пожелания успешно изменены';
+    return 'Данные подарка успешно изменены';
   }
 
   async remove(id: number): Promise<string> {
