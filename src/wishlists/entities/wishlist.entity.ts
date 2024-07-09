@@ -9,9 +9,6 @@ export class Wishlist extends BaseEntity {
   name: string;
 
   @Column()
-  description: string;
-
-  @Column()
   image: string;
 
   @ManyToOne(() => User)

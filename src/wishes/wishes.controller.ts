@@ -28,13 +28,11 @@ export class WishesController {
   }
 
   @Get('last')
-  @UseGuards(JwtAuthGuard)
   getLast() {
     return this.wishesService.findLast();
   }
 
   @Get('top')
-  @UseGuards(JwtAuthGuard)
   getTop() {
     return this.wishesService.findTop();
   }

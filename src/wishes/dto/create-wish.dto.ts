@@ -21,14 +21,8 @@ export class CreateWishDto {
   @IsNumber()
   price: number;
 
-  @IsNumber()
-  raised: number;
-
   @IsString()
   @MinLength(1, { message: 'Описание не может быть короче 1 символа' })
   @MaxLength(1024, { message: 'Описание не может быть длинее 1024 символов' })
   description: string;
-
-  @IsNumber()
-  copied: number;
 }
