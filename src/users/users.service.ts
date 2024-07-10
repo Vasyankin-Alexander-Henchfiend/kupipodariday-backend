@@ -26,7 +26,6 @@ export class UsersService {
     if (!users) {
       throw new NotFoundException('Запрашиваемый пользователь не найден');
     }
-    console.log(users);
     return users;
   }
 

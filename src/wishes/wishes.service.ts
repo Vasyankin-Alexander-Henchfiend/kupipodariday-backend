@@ -65,6 +65,15 @@ export class WishesService {
     return wish;
   }
 
+  async findManyById(id: number[]): Promise<Wish[] | null> {
+    const wishes = [];
+    const length = id.length;
+    for (let i = 0; i < length; i++) {
+      wishes.push(await this.findOne(id[i]));
+    }
+    return wishes;
+  }
+
   async create(createWishDto: CreateWishDto, id: number): Promise<Wish> {
     const user = await this.userService.findOne(id);
     const { password, ...owner } = user;

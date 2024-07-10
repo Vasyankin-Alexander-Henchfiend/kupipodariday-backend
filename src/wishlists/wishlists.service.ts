@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Wishlist } from './entities/wishlist.entity';
 import { UsersService } from 'src/users/users.service';
+import { WishesService } from 'src/wishes/wishes.service';
 
 @Injectable()
 export class WishlistsService {
@@ -12,6 +13,7 @@ export class WishlistsService {
     @InjectRepository(Wishlist)
     private wishlistsRepository: Repository<Wishlist>,
     private userService: UsersService,
+    private wishesService: WishesService,
   ) {}
 
   findAll(): Promise<Wishlist[]> {
@@ -35,12 +37,15 @@ export class WishlistsService {
     createWishlistDto: CreateWishlistDto,
     userId: number,
   ): Promise<Wishlist> {
-    const owner = await this.userService.findOne(userId);
+    const user = await this.userService.findOne(userId);
+    const { password, ...owner } = user;
+    const wishes = await this.wishesService.findManyById(
+      createWishlistDto.itemsId,
+    );
     const wishlist = this.wishlistsRepository.create({
-      name: createWishlistDto.name,
-      image: createWishlistDto.image,
-      items: createWishlistDto.itemsId,
+      ...createWishlistDto,
       owner,
+      items: wishes,
     });
     return await this.wishlistsRepository.save(wishlist);
   }

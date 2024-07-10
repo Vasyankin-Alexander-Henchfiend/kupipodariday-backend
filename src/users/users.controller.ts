@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   UsePipes,
   ValidationPipe,
   UseGuards,
@@ -14,7 +13,6 @@ import {
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { query } from 'express';
 
 @Controller('users')
 export class UsersController {
