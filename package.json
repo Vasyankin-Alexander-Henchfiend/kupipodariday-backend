@@ -1,8 +1,8 @@
 {
   "name": "kupipodariday-backend",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "бэкенд сервиса вишлистов КупиПодариДай",
+  "author": "Васянькин Александр Иванович",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -21,11 +21,12 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nestjs/common": "^9.0.0",
+    "@nestjs/common": "^10.3.9",
+    "@nestjs/config": "^3.2.2",
     "@nestjs/core": "^10.3.8",
     "@nestjs/jwt": "^10.2.0",
-    "@nestjs/mapped-types": "^1.1.0",
-    "@nestjs/passport": "^9.0.0",
+    "@nestjs/mapped-types": "^2.0.5",
+    "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.3.8",
     "@nestjs/swagger": "^7.3.1",
     "@nestjs/typeorm": "^10.0.2",
@@ -35,11 +36,11 @@
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
-    "pg": "^8.7.3",
+    "pg": "^8.12.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "typeorm": "^0.3.7"
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
