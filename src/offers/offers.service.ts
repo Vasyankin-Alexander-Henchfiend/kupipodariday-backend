@@ -5,12 +5,15 @@ import { Offer } from './entities/offer.entity';
 import { Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
 import { WishesService } from 'src/wishes/wishes.service';
+import { Wish } from 'src/wishes/entities/wish.entity';
 
 @Injectable()
 export class OffersService {
   constructor(
     @InjectRepository(Offer)
     private offersRepository: Repository<Offer>,
+    @InjectRepository(Wish)
+    private wishRepository: Repository<Wish>,
     private userService: UsersService,
     private wishService: WishesService,
   ) {}
@@ -18,12 +21,26 @@ export class OffersService {
   async create(createOfferDto: CreateOfferDto, userId: number): Promise<Offer> {
     const user = await this.userService.findOne(userId);
     const item = await this.wishService.findOne(createOfferDto.itemId);
+    if (item.owner.id === userId) {
+      throw new ForbiddenException('Вы не можете скидываться на свой подарок');
+    }
     const offer = this.offersRepository.create({
       ...createOfferDto,
       user,
       item,
     });
-    return await this.offersRepository.save(offer);
+    if (Number(offer.amount) + Number(item.raised) > Number(item.price)) {
+      throw new ForbiddenException(
+        'Сумма которую вы пытаетесь скинуть превышает сумму подарка',
+      );
+    }
+    let raised = Number(item.raised);
+    await this.wishRepository.save({
+      ...item,
+      raised: (raised += +offer.amount),
+    });
+    await this.offersRepository.save(offer);
+    return;
   }
 
   async findAll(): Promise<Offer[]> {

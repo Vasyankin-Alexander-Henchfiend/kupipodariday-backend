@@ -58,7 +58,10 @@ export class WishesService {
   }
 
   async findOne(id: number): Promise<Wish | null> {
-    const wish = await this.wishRepository.findOneBy({ id });
+    const wish = await this.wishRepository.findOne({
+      where: { id },
+      relations: ['owner', 'offers'],
+    });
     if (!wish) {
       throw new ForbiddenException('Такого подарка не существует');
     }
@@ -84,14 +87,26 @@ export class WishesService {
     return await this.wishRepository.save(wish);
   }
 
-  async update(id: number, updateWishDto: UpdateWishDto) {
-    await this.findOne(id);
+  async update(
+    id: number,
+    updateWishDto: UpdateWishDto,
+    userId: number,
+  ): Promise<string> {
+    const wish = await this.findOne(id);
+    if (wish.owner.id !== userId) {
+      throw new ForbiddenException(
+        'Вы не можете редактировать не свой подарок',
+      );
+    }
     await this.wishRepository.update(id, updateWishDto);
     return 'Данные подарка успешно изменены';
   }
 
-  async remove(id: number): Promise<string> {
-    await this.findOne(id);
+  async remove(id: number, userId: number): Promise<string> {
+    const wish = await this.findOne(id);
+    if (wish.owner.id !== userId) {
+      throw new ForbiddenException('Вы не можете удалить не свой подарок');
+    }
     await this.wishRepository.delete(id);
     return 'Пожелание успешно удалено';
   }

@@ -45,13 +45,18 @@ export class WishlistsController {
   update(
     @Param('id') id: string,
     @Body() updateWishlistDto: UpdateWishlistDto,
+    @Req() req,
   ) {
-    return this.wishlistsService.update(+id, updateWishlistDto);
+    return this.wishlistsService.update(
+      +id,
+      updateWishlistDto,
+      req.user.userId,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishlistsService.remove(+id);
+  remove(@Param('id') id: string, @Req() req) {
+    return this.wishlistsService.remove(+id, req.user.userId);
   }
 }

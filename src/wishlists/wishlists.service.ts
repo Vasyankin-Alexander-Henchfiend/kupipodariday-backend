@@ -50,14 +50,28 @@ export class WishlistsService {
     return await this.wishlistsRepository.save(wishlist);
   }
 
-  async update(id: number, updateWishlistDto: UpdateWishlistDto) {
-    await this.findOne(id);
+  async update(
+    id: number,
+    updateWishlistDto: UpdateWishlistDto,
+    userId: number,
+  ) {
+    const wishlist = await this.findOne(id);
+    if (wishlist.owner.id !== userId) {
+      throw new ForbiddenException(
+        'Вы не можете редактировать чужие списки пожеланий',
+      );
+    }
     await this.wishlistsRepository.update(id, updateWishlistDto);
     return 'Данные списка пожеланий успешно изменены';
   }
 
-  async remove(id: number) {
-    await this.findOne(id);
+  async remove(id: number, userId: number) {
+    const wishlist = await this.findOne(id);
+    if (wishlist.owner.id !== userId) {
+      throw new ForbiddenException(
+        'Вы не можете удалять чужие списки пожеланий',
+      );
+    }
     await this.wishlistsRepository.delete(id);
     return 'Список пожеланий успешно удален';
   }

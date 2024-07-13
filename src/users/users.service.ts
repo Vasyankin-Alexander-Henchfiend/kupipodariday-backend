@@ -98,10 +98,4 @@ export class UsersService {
     await this.userRepository.update(id, updateUserDto);
     return 'Данные пользователя успешно изменены';
   }
-
-  async remove(id: number): Promise<string> {
-    await this.findOne(id);
-    await this.userRepository.delete(id);
-    return 'Пользователь успешно удален';
-  }
 }

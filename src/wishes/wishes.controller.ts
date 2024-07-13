@@ -46,14 +46,18 @@ export class WishesController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
-  update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
-    return this.wishesService.update(+id, updateWishDto);
+  update(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() updateWishDto: UpdateWishDto,
+  ) {
+    return this.wishesService.update(+id, updateWishDto, +req.user.userId);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string) {
-    return this.wishesService.remove(+id);
+  remove(@Req() req, @Param('id') id: string) {
+    return this.wishesService.remove(+id, +req.user.userId);
   }
 
   @Post(':id/copy')

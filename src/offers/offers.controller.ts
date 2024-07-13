@@ -21,7 +21,7 @@ export class OffersController {
   @Post()
   @UsePipes(new ValidationPipe())
   create(@Req() req, @Body() createOfferDto: CreateOfferDto) {
-    return this.offersService.create(createOfferDto, req.user.id);
+    return this.offersService.create(createOfferDto, req.user.userId);
   }
 
   @Get()
